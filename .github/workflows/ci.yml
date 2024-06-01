@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: 'backend'
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [18.x, 20.x]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      name: Checkout
+
+    - uses: pnpm/action-setup@v4
+      with:
+        version: '8'
+      name: Setup PNPM
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'pnpm'
+        cache-dependency-path: 'backend/pnpm-lock.yaml'
+
+    - name: Install project dependencies
+      run: pnpm install
+
+    - name: Run tests
+      run: pnpm test
+
+    - name: Create prisma typing
+      run: pnpm dlx prisma generate
+
+    - name: Check types
+      run: npx tsc --noEmit

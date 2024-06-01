@@ -1,0 +1,19 @@
+version: '3.6'
+
+services:
+  database:
+    container_name: db_lumi
+    build:
+      context: ../
+      dockerfile: .docker/database/Dockerfile
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      - POSTGRES_USERNAME=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DB}
+    volumes:
+      - ./database/data:/var/lib/postgresql/data
+      - ./database/scripts:/etc/postgresql/scripts
+    restart: on-failure
+    tty: true

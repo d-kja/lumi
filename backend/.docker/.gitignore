@@ -1,0 +1,7 @@
+.env
+
+/local/database/data/
+/local/database/scripts/
+
+/database/data/
+/database/scripts/
